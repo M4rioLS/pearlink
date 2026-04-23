@@ -72,10 +72,40 @@ A single craft yields one Pearlink Block. Mid-game accessible — you need a net
 
 ---
 
+## Building from Source
+
+Requires **JDK 21** and an internet connection for the first build (Gradle downloads dependencies automatically).
+
+```bash
+# Clone the repository
+git clone https://github.com/M4rioLS/pearlink.git
+cd pearlink
+```
+
+**Common tasks:**
+
+| Command | What it does |
+|---|---|
+| `./gradlew build` | Compile and produce the release JAR in `build/libs/` |
+| `./gradlew runClient` | Launch a Minecraft client with the mod loaded for testing |
+| `./gradlew runServer` | Launch a dedicated server with the mod loaded |
+| `./gradlew test` | Run unit tests |
+| `./gradlew clean` | Delete all build outputs |
+
+On Windows use `gradlew.bat` (or just `gradlew` in PowerShell/Git Bash) instead of `./gradlew`.
+
+The first `runClient` run will take a few minutes — Fabric downloads and sets up the game environment. Subsequent runs are much faster.
+
+The distributable JAR is at `build/libs/pearlink-<version>.jar` (the one without `-dev` or `-sources` in the name).
+
+---
+
 ## Links
 
 - Homepage: https://m4riols.github.io/
 - Source: https://github.com/M4rioLS/pearlink
+- Modrinth: https://modrinth.com/mod/pearlink
+- CurseForge: https://www.curseforge.com/minecraft/mc-mods/pearlink
 - License: MIT — see [LICENSE](LICENSE).
 
 Built by **M4rioLS**. Feedback and PRs welcome.
