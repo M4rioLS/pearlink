@@ -11,7 +11,7 @@
 		"homepage": "https://m4riols.github.io/",
 		"sources": "https://github.com/M4rioLS/pearlink"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/pearlink/icon.png",
 	"environment": "*",
 	"entrypoints": {
