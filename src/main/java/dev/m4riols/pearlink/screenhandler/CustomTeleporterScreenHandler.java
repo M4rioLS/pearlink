@@ -13,6 +13,11 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 
 public class CustomTeleporterScreenHandler extends ScreenHandler{
+    private static final int PLAYER_INV_START = 0;
+    private static final int HOTBAR_START = 27;
+    private static final int HOTBAR_END = 36;
+    private static final int CONTAINER_SLOT = 36;
+
     private final CustomTeleporterBlockEntity blockEntity;
     private final ScreenHandlerContext context;
 
@@ -66,51 +71,30 @@ public class CustomTeleporterScreenHandler extends ScreenHandler{
         return canUse(context, player, BlockInit.CUSTOM_TELEPORTER_BLOCK);
     }
 
-    // TODO: needs testing, cf. AbstractFurnaceScreenHandler
     @Override
     public ItemStack quickMove(PlayerEntity player, int slotIndex) {
-
-        ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
+        if (slot == null || !slot.hasStack()) return ItemStack.EMPTY;
 
-        if (slot != null && slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
+        ItemStack originalStack = slot.getStack();
+        ItemStack newStack = originalStack.copy();
 
-            if (slotIndex == 0) {
-                if (!this.insertItem(originalStack, 1, 37, true)) {
-                    return ItemStack.EMPTY;
-                }
-                slot.onQuickTransfer(originalStack, newStack);
-            } else {
-                if (!this.slots.get(0).hasStack() && !this.insertItem(originalStack, 0, 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-
-                if (slotIndex >= 1 && slotIndex < 28) {
-                    if (!this.insertItem(originalStack, 28, 37, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (slotIndex >= 28 && slotIndex < 37) {
-                    if (!this.insertItem(originalStack, 1, 28, false)) {
-                        return ItemStack.EMPTY;
-                    }
+        if (slotIndex == CONTAINER_SLOT) {
+            if (!insertItem(originalStack, PLAYER_INV_START, HOTBAR_END, true)) return ItemStack.EMPTY;
+        } else {
+            if (!insertItem(originalStack, CONTAINER_SLOT, CONTAINER_SLOT + 1, false)) {
+                if (slotIndex < HOTBAR_START) {
+                    if (!insertItem(originalStack, HOTBAR_START, HOTBAR_END, false)) return ItemStack.EMPTY;
+                } else {
+                    if (!insertItem(originalStack, PLAYER_INV_START, HOTBAR_START, false)) return ItemStack.EMPTY;
                 }
             }
-
-            if (originalStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-
-            if (originalStack.getCount() == newStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTakeItem(player, originalStack);
         }
 
+        if (originalStack.isEmpty()) slot.setStack(ItemStack.EMPTY);
+        else slot.markDirty();
+        if (originalStack.getCount() == newStack.getCount()) return ItemStack.EMPTY;
+        slot.onTakeItem(player, originalStack);
         return newStack;
     }
 

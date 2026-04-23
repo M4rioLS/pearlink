@@ -40,6 +40,11 @@ public class CustomTeleporterBlockEntity extends BlockEntity implements Extended
             super.markDirty();
             update();
         }
+
+        @Override
+        public int getMaxCountPerStack() {
+            return 1;
+        }
     };
 
     private final InventoryStorage inventoryStorage = InventoryStorage.of(inventory, null);
