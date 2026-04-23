@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "pearlink",
+	"version": "${version}",
+	"name": "pearlink",
+	"description": "Pearlink: Travel with teleporters.",
+	"authors": [
+		"M4rioLS"
+	],
+	"contact": {
+		"homepage": "https://m4riols.github.io/",
+		"sources": "https://github.com/M4rioLS/pearlink"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/pearlink/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.m4riols.pearlink.Pearlink"
+		],
+		"client": [
+			"dev.m4riols.pearlink.PearlinkClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.5",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

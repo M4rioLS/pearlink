@@ -1,0 +1,78 @@
+{
+  "values": [
+    "minecraft:air",
+    "minecraft:cave_air",
+    "minecraft:void_air",
+    "minecraft:structure_void",
+    "minecraft:water",
+    "minecraft:lava",
+    "minecraft:powder_snow",
+    "minecraft:moss_carpet",
+    "minecraft:vine",
+    "minecraft:cave_vines",
+    "minecraft:cave_vines_plant",
+    "minecraft:hanging_roots",
+    "minecraft:glow_lichen",
+    "minecraft:weeping_vines",
+    "minecraft:weeping_vines_plant",
+    "minecraft:twisting_vines",
+    "minecraft:twisting_vines_plant",
+    "minecraft:sweet_berry_bush",
+    "minecraft:kelp",
+    "minecraft:kelp_plant",
+    "minecraft:seagrass",
+    "minecraft:tall_seagrass",
+    "minecraft:short_grass",
+    "minecraft:tall_grass",
+    "minecraft:frogspawn",
+    "minecraft:light",
+    "minecraft:torch",
+    "minecraft:soul_torch",
+    "minecraft:redstone_torch",
+    "minecraft:lever",
+    "minecraft:ladder",
+    "minecraft:redstone_wire",
+    "minecraft:cobweb",
+    "minecraft:sculk_vein",
+    "minecraft:pink_petals",
+    "minecraft:scaffolding",
+    "minecraft:tripwire",
+    "minecraft:tripwire_hook",
+    {
+      "id": "#minecraft:wool_carpets",
+      "required": false
+    },
+    {
+      "id": "#minecraft:buttons",
+      "required": false
+    },
+    {
+      "id": "#minecraft:pressure_plates",
+      "required": false
+    },
+    {
+      "id": "#minecraft:rails",
+      "required": false
+    },
+    {
+      "id": "#minecraft:signs",
+      "required": false
+    },
+    {
+      "id": "#minecraft:standing_signs",
+      "required": false
+    },
+    {
+      "id": "#minecraft:banners",
+      "required": false
+    },
+    {
+      "id": "#minecraft:flowers",
+      "required": false
+    },
+    {
+      "id": "#minecraft:crops",
+      "required": false
+    }
+  ]
+}

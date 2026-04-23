@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "example": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 2
+  },
+  "display": {
+    "title": {
+      "translate": "advancements.pearlink.slipgate_surfer.title",
+      "fallback": "Slipgate Surfer"
+    },
+    "description": {
+      "translate": "advancements.pearlink.slipgate_surfer.description",
+      "fallback":   "Travel through a teleporter"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pearlink:teleport_block"
+    },
+    "frame": "task", 
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  }
+}

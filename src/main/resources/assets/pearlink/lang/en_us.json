@@ -1,0 +1,5 @@
+{
+  "block.pearlink.teleport_block": "Pearlink Block",
+  "container.pearlink.teleporter": "Pearlink",
+  "message.pearlink.teleporter_locked": "Pearlink cannot be opened"
+}

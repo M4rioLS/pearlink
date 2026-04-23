@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "pearlink:block/teleport_block"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "pearlink:block/template_totem_block",
+  "textures": {
+    "end": "pearlink:block/teleport_block_end",
+    "side": "pearlink:block/teleport_block"
+  }
+}
