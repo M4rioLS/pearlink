@@ -125,6 +125,9 @@ public class CustomTeleporterBlock extends Block implements EntityBlock {
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         if (!world.isClientSide()) {
             CustomTeleporterBlock.removeTeleportBlockPos(world.getServer(), pos);
+            if (blockEntity instanceof CustomTeleporterBlockEntity cusTpEntity) {
+                Containers.dropContents(world, pos, cusTpEntity.getInventory());
+            }
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
@@ -133,12 +136,7 @@ public class CustomTeleporterBlock extends Block implements EntityBlock {
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         TeleporterBlockData teleporterData = TeleporterBlockData.getServerState(world.getServer());
         teleporterData.removeTeleportBlockPos(pos);
-
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof CustomTeleporterBlockEntity cusTpEntity) {
-            Containers.dropContents(world, pos, cusTpEntity.getInventory());
-            world.updateNeighbourForOutputSignal(pos, this);
-        }
+        world.updateNeighbourForOutputSignal(pos, this);
         super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 
