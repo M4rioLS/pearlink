@@ -18,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -89,6 +90,13 @@ public class CustomTeleporterBlockEntity extends BlockEntity implements Extended
     protected void saveAdditional(ValueOutput output) {
         ContainerHelper.saveAllItems(output, this.inventory.getItems());
         super.saveAdditional(output);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level != null) {
+            Containers.dropContents(this.level, pos, this.inventory);
+        }
     }
 
 

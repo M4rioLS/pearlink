@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -125,9 +124,6 @@ public class CustomTeleporterBlock extends Block implements EntityBlock {
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         if (!world.isClientSide()) {
             CustomTeleporterBlock.removeTeleportBlockPos(world.getServer(), pos);
-            if (blockEntity instanceof CustomTeleporterBlockEntity cusTpEntity) {
-                Containers.dropContents(world, pos, cusTpEntity.getInventory());
-            }
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
