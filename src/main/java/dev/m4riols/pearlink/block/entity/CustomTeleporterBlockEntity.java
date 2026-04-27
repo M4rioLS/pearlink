@@ -99,13 +99,6 @@ public class CustomTeleporterBlockEntity extends BlockEntity implements Extended
         }
     }
 
-    @Override
-    public void onBlockReplaced(BlockPos pos, BlockState state) {
-        if (this.world != null) {
-            ItemScatterer.spawn(this.world, pos, this.inventory);
-        }
-    }
-
 
     private void update(){
         setChanged();
