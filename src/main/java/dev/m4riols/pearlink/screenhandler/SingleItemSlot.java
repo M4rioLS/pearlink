@@ -1,22 +1,22 @@
 package dev.m4riols.pearlink.screenhandler;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class SingleItemSlot extends Slot {
 
-    public SingleItemSlot(Inventory inventory, int index, int x, int y) {
+    public SingleItemSlot(Container inventory, int index, int x, int y) {
         super(inventory, index, x, y);
     }
 
     @Override
-    public int getMaxItemCount() {
+    public int getMaxStackSize() {
         return 1;
     }
 
     @Override
-    public boolean canInsert(ItemStack stack) {
-        return this.getStack().isEmpty();
+    public boolean mayPlace(ItemStack stack) {
+        return this.getItem().isEmpty();
     }
 }

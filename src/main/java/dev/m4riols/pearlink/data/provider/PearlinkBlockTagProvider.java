@@ -4,26 +4,26 @@ import java.util.concurrent.CompletableFuture;
 
 import dev.m4riols.pearlink.Pearlink;
 import dev.m4riols.pearlink.init.BlockInit;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
-public class PearlinkBlockTagProvider extends FabricTagProvider.BlockTagProvider{
+public class PearlinkBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 
-    public PearlinkBlockTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> registriesFuture) {
+    public PearlinkBlockTagProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
-    public static final TagKey<Block> TELEPORTABLE_TO_BLOCK = TagKey.of(RegistryKeys.BLOCK, Pearlink.id("teleportable_to_block"));
+    public static final TagKey<Block> TELEPORTABLE_TO_BLOCK = TagKey.create(Registries.BLOCK, Pearlink.id("teleportable_to_block"));
 
     @Override
-    protected void configure(WrapperLookup wrapperLookup) {
+    protected void addTags(HolderLookup.Provider wrapperLookup) {
 
-        valueLookupBuilder(BlockTags.PICKAXE_MINEABLE)
+        valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(BlockInit.CUSTOM_TELEPORTER_BLOCK);
 
         valueLookupBuilder(TELEPORTABLE_TO_BLOCK)
