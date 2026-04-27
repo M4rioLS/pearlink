@@ -33,7 +33,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -131,16 +130,9 @@ public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
 
     @Override
     public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        if (world instanceof ServerWorld) {
-            ServerWorld serverWorld = (ServerWorld) world;
-            TeleporterBlockData teleporterData = TeleporterBlockData.getServerState(serverWorld.getServer());
-            teleporterData.removeTeleportBlockPos(pos);
-        }
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof CustomTeleporterBlockEntity cusTpEntity) {
-            ItemScatterer.spawn(world, pos, cusTpEntity.getInventory());
-            world.updateComparators(pos,this);
-        }
+        TeleporterBlockData teleporterData = TeleporterBlockData.getServerState(world.getServer());
+        teleporterData.removeTeleportBlockPos(pos);
+        world.updateComparators(pos, this);
         super.onStateReplaced(state, world, pos, moved);
     }
 

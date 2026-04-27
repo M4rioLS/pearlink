@@ -28,6 +28,7 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -99,6 +100,13 @@ public class CustomTeleporterBlockEntity extends BlockEntity implements Extended
     protected void writeData(WriteView view) {
         Inventories.writeData(view, this.inventory.getHeldStacks());
         super.writeData(view);
+    }
+
+    @Override
+    public void onBlockReplaced(BlockPos pos, BlockState state) {
+        if (this.world != null) {
+            ItemScatterer.spawn(this.world, pos, this.inventory);
+        }
     }
 
 
