@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -18,54 +19,60 @@ public class PearlinkBlockTagProvider extends FabricTagsProvider.BlockTagsProvid
     public PearlinkBlockTagProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
+
     public static final TagKey<Block> TELEPORTABLE_TO_BLOCK = TagKey.create(Registries.BLOCK, Pearlink.id("teleportable_to_block"));
+
+    // MC 26.2: tag appenders accept ResourceKey<Block> rather than Block values.
+    private static ResourceKey<Block> key(Block block) {
+        return block.builtInRegistryHolder().key();
+    }
 
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
 
-        valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
-            .add(BlockInit.CUSTOM_TELEPORTER_BLOCK);
+        builder(BlockTags.MINEABLE_WITH_PICKAXE)
+            .add(key(BlockInit.CUSTOM_TELEPORTER_BLOCK));
 
-        valueLookupBuilder(TELEPORTABLE_TO_BLOCK)
-            .add(Blocks.AIR)
-            .add(Blocks.CAVE_AIR)
-            .add(Blocks.VOID_AIR)
-            .add(Blocks.STRUCTURE_VOID)
-            .add(Blocks.WATER)
-            .add(Blocks.LAVA)
-            .add(Blocks.POWDER_SNOW)
+        builder(TELEPORTABLE_TO_BLOCK)
+            .add(key(Blocks.AIR))
+            .add(key(Blocks.CAVE_AIR))
+            .add(key(Blocks.VOID_AIR))
+            .add(key(Blocks.STRUCTURE_VOID))
+            .add(key(Blocks.WATER))
+            .add(key(Blocks.LAVA))
+            .add(key(Blocks.POWDER_SNOW))
 
-            .add(Blocks.MOSS_CARPET)
-            .add(Blocks.VINE)
-            .add(Blocks.CAVE_VINES)
-            .add(Blocks.CAVE_VINES_PLANT)
-            .add(Blocks.HANGING_ROOTS)
-            .add(Blocks.GLOW_LICHEN)
-            .add(Blocks.WEEPING_VINES)
-            .add(Blocks.WEEPING_VINES_PLANT)
-            .add(Blocks.TWISTING_VINES)
-            .add(Blocks.TWISTING_VINES_PLANT)
-            .add(Blocks.SWEET_BERRY_BUSH)
-            .add(Blocks.KELP)
-            .add(Blocks.KELP_PLANT)
-            .add(Blocks.SEAGRASS)
-            .add(Blocks.TALL_SEAGRASS)
-            .add(Blocks.SHORT_GRASS)
-            .add(Blocks.TALL_GRASS)
-            .add(Blocks.FROGSPAWN)
-            .add(Blocks.LIGHT)
-            .add(Blocks.TORCH)
-            .add(Blocks.SOUL_TORCH)
-            .add(Blocks.REDSTONE_TORCH)
-            .add(Blocks.LEVER)
-            .add(Blocks.LADDER)
-            .add(Blocks.REDSTONE_WIRE)
-            .add(Blocks.COBWEB)
-            .add(Blocks.SCULK_VEIN)
-            .add(Blocks.PINK_PETALS)
-            .add(Blocks.SCAFFOLDING)
-            .add(Blocks.TRIPWIRE)
-            .add(Blocks.TRIPWIRE_HOOK)
+            .add(key(Blocks.MOSS_CARPET))
+            .add(key(Blocks.VINE))
+            .add(key(Blocks.CAVE_VINES))
+            .add(key(Blocks.CAVE_VINES_PLANT))
+            .add(key(Blocks.HANGING_ROOTS))
+            .add(key(Blocks.GLOW_LICHEN))
+            .add(key(Blocks.WEEPING_VINES))
+            .add(key(Blocks.WEEPING_VINES_PLANT))
+            .add(key(Blocks.TWISTING_VINES))
+            .add(key(Blocks.TWISTING_VINES_PLANT))
+            .add(key(Blocks.SWEET_BERRY_BUSH))
+            .add(key(Blocks.KELP))
+            .add(key(Blocks.KELP_PLANT))
+            .add(key(Blocks.SEAGRASS))
+            .add(key(Blocks.TALL_SEAGRASS))
+            .add(key(Blocks.SHORT_GRASS))
+            .add(key(Blocks.TALL_GRASS))
+            .add(key(Blocks.FROGSPAWN))
+            .add(key(Blocks.LIGHT))
+            .add(key(Blocks.TORCH))
+            .add(key(Blocks.SOUL_TORCH))
+            .add(key(Blocks.REDSTONE_TORCH))
+            .add(key(Blocks.LEVER))
+            .add(key(Blocks.LADDER))
+            .add(key(Blocks.REDSTONE_WIRE))
+            .add(key(Blocks.COBWEB))
+            .add(key(Blocks.SCULK_VEIN))
+            .add(key(Blocks.PINK_PETALS))
+            .add(key(Blocks.SCAFFOLDING))
+            .add(key(Blocks.TRIPWIRE))
+            .add(key(Blocks.TRIPWIRE_HOOK))
 
             .addOptionalTag(BlockTags.WOOL_CARPETS)
             .addOptionalTag(BlockTags.BUTTONS)
@@ -76,7 +83,6 @@ public class PearlinkBlockTagProvider extends FabricTagsProvider.BlockTagsProvid
             .addOptionalTag(BlockTags.BANNERS)
             .addOptionalTag(BlockTags.FLOWERS)
             .addOptionalTag(BlockTags.CROPS)
-
             ;
     }
 }
