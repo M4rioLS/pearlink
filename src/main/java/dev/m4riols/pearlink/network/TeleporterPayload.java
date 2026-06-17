@@ -1,30 +1,30 @@
 package dev.m4riols.pearlink.network;
 
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.List;
 
 import dev.m4riols.pearlink.Pearlink;
 
-public record TeleporterPayload(List<BlockPos> positions) implements CustomPayload {
+public record TeleporterPayload(List<BlockPos> positions) implements CustomPacketPayload {
 
-    public static final CustomPayload.Id<TeleporterPayload> ID =
-            new CustomPayload.Id<>(Pearlink.id("teleporter_sync"));
+    public static final CustomPacketPayload.Type<TeleporterPayload> ID =
+            new CustomPacketPayload.Type<>(Pearlink.id("teleporter_sync"));
 
-    public static final PacketCodec<RegistryByteBuf, TeleporterPayload> CODEC =
-            PacketCodec.tuple(
-                    PacketCodecs.collection(java.util.ArrayList::new, BlockPos.PACKET_CODEC),
+    public static final StreamCodec<RegistryFriendlyByteBuf, TeleporterPayload> CODEC =
+            StreamCodec.composite(
+                    BlockPos.STREAM_CODEC.apply(ByteBufCodecs.collection(java.util.ArrayList::new)),
                     TeleporterPayload::positions,
                     TeleporterPayload::new
             );
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

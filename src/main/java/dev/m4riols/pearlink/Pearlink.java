@@ -13,10 +13,12 @@ import dev.m4riols.pearlink.init.EventInit;
 import dev.m4riols.pearlink.init.ScreenHandlerTypeInit;
 import dev.m4riols.pearlink.network.TeleporterPayload;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
 
 public class Pearlink implements ModInitializer {
 	public static final String MOD_ID = "pearlink";
@@ -35,18 +37,20 @@ public class Pearlink implements ModInitializer {
 		TeleporterBlockData.load();
 		ScreenHandlerTypeInit.load();
 
-		PayloadTypeRegistry.playS2C().register(TeleporterPayload.ID, TeleporterPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(TeleporterPayload.ID, TeleporterPayload.CODEC);
 
 		EventInit.load();
 
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries ->
-			entries.add(BlockInit.CUSTOM_TELEPORTER_BLOCK_ITEM)
+		ResourceKey<CreativeModeTab> functionalBlocks =
+			ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.withDefaultNamespace("functional_blocks"));
+		CreativeModeTabEvents.modifyOutputEvent(functionalBlocks).register(output ->
+			output.accept(BlockInit.CUSTOM_TELEPORTER_BLOCK_ITEM)
 		);
 
     }
 
 	public static Identifier id(String path) {
-		return Identifier.of(MOD_ID,path);
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 }

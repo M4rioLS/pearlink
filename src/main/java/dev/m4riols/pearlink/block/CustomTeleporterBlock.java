@@ -14,46 +14,46 @@ import dev.m4riols.pearlink.data.provider.PearlinkBlockTagProvider;
 import dev.m4riols.pearlink.data.state.TeleporterBlockData;
 import dev.m4riols.pearlink.init.BlockEntityTypeInit;
 import dev.m4riols.pearlink.util.MiscUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
+public class CustomTeleporterBlock extends Block implements EntityBlock {
 
     private static final long COOLDOWN_PERIOD = 5000;
     private static List<BlockPos> teleportBlockPositions = new ArrayList<>();
-    public static final BooleanProperty LOCKED = Properties.LOCKED;
+    public static final BooleanProperty LOCKED = BlockStateProperties.LOCKED;
 
     private HashMap<UUID, Long> teleportCooldown = new HashMap<>();
 
-    public CustomTeleporterBlock(Settings settings) {
+    public CustomTeleporterBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState()
-            .with(LOCKED, false)
+        this.registerDefaultState(this.stateDefinition.any()
+            .setValue(LOCKED, false)
         );
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(LOCKED);
     }
 
@@ -77,14 +77,14 @@ public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
         teleportBlockPositions = positions;
     }
 
-    public static List<CustomTeleporterBlockEntity> findConnectedTeleportBlocks(World world, ItemStack item) {
+    public static List<CustomTeleporterBlockEntity> findConnectedTeleportBlocks(Level world, ItemStack item) {
         List<CustomTeleporterBlockEntity> connectedBlocks = new ArrayList<>();
 
         for (BlockPos pos : teleportBlockPositions) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CustomTeleporterBlockEntity teleportBlockEntity) {
                 ItemStack storedItem = teleportBlockEntity.getStoredItem();
-                if (ItemStack.areItemsEqual(storedItem, item)) {
+                if (ItemStack.isSameItem(storedItem, item)) {
                     connectedBlocks.add(teleportBlockEntity);
                 }
             }
@@ -94,74 +94,74 @@ public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit){
-        if (state.get(LOCKED)) {
-            player.sendMessage(Text.translatable("message.pearlink.teleporter_locked"), true);
-            world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            return ActionResult.FAIL;
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (state.getValue(LOCKED)) {
+            sendActionBar(player, Component.translatable("message.pearlink.teleporter_locked"));
+            world.playSound(null, pos, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return InteractionResult.FAIL;
         }
-        if (!world.isClient()) {
-            if(world.getBlockEntity(pos) instanceof CustomTeleporterBlockEntity teleporter)
-                player.openHandledScreen(teleporter);
+        if (!world.isClientSide()) {
+            if (world.getBlockEntity(pos) instanceof CustomTeleporterBlockEntity teleporter)
+                player.openMenu(teleporter);
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         // Factory-instantiate (rather than `new`) so other mods can intercept via the block entity type.
-        return BlockEntityTypeInit.CUSTOM_TELEPORTER_BLOCK_ENTITY.instantiate(pos, state);
+        return BlockEntityTypeInit.CUSTOM_TELEPORTER_BLOCK_ENTITY.create(pos, state);
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (!world.isClient()) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+        if (!world.isClientSide()) {
             CustomTeleporterBlock.addTeleportBlockPos(world.getServer(), pos);
         }
-        super.onPlaced(world, pos, state, placer, itemStack);
+        super.setPlacedBy(world, pos, state, placer, itemStack);
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        if (!world.isClient()) {
+    public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        if (!world.isClientSide()) {
             CustomTeleporterBlock.removeTeleportBlockPos(world.getServer(), pos);
         }
-        super.afterBreak(world, player, pos, state, blockEntity, tool);
+        super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
 
     @Override
-    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         TeleporterBlockData teleporterData = TeleporterBlockData.getServerState(world.getServer());
         teleporterData.removeTeleportBlockPos(pos);
-        world.updateComparators(pos, this);
-        super.onStateReplaced(state, world, pos, moved);
+        world.updateNeighbourForOutputSignal(pos, this);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 
-    private void teleportPlayer(PlayerEntity player, BlockPos targetPos, ServerWorld world) {
+    private void teleportPlayer(Player player, BlockPos targetPos, ServerLevel world) {
         long currentTime = System.currentTimeMillis();
 
-        UUID playerUUID = player.getUuid();
+        UUID playerUUID = player.getUUID();
         long lastCollisionTime = teleportCooldown.getOrDefault(playerUUID, 0L);
 
         if (currentTime - lastCollisionTime > COOLDOWN_PERIOD) {
-            BlockPos destination = targetPos.up();
-            if (world.getBlockState(destination).isIn(PearlinkBlockTagProvider.TELEPORTABLE_TO_BLOCK) && world.getBlockState(destination.up()).isIn(PearlinkBlockTagProvider.TELEPORTABLE_TO_BLOCK)) {
-                player.requestTeleport(destination.getX() + 0.5, destination.getY(), destination.getZ() + 0.5);
+            BlockPos destination = targetPos.above();
+            if (world.getBlockState(destination).is(PearlinkBlockTagProvider.TELEPORTABLE_TO_BLOCK) && world.getBlockState(destination.above()).is(PearlinkBlockTagProvider.TELEPORTABLE_TO_BLOCK)) {
+                player.teleportTo(destination.getX() + 0.5, destination.getY(), destination.getZ() + 0.5);
 
                 teleportCooldown.put(playerUUID, currentTime);
-                if (player instanceof ServerPlayerEntity)
-                    MiscUtil.grantAdvancement((ServerPlayerEntity) player,  Pearlink.id("adventure/slipgate_surfer"));
-                world.playSound(null, destination, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                if (player instanceof ServerPlayer)
+                    MiscUtil.grantAdvancement((ServerPlayer) player, Pearlink.id("adventure/slipgate_surfer"));
+                world.playSound(null, destination, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1.0F, 1.0F);
             } else {
-                player.sendMessage(Text.of("The teleport destination is obstructed."), true);
+                sendActionBar(player, Component.literal("The teleport destination is obstructed."));
             }
         }
     }
 
     @Override
-    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        super.onSteppedOn(world, pos, state, entity);
+    public void stepOn(Level world, BlockPos pos, BlockState state, Entity entity) {
+        super.stepOn(world, pos, state, entity);
 
-        if (!world.isClient() && entity instanceof PlayerEntity player) {
+        if (!world.isClientSide() && entity instanceof Player player) {
             CustomTeleporterBlockEntity blockEntity = (CustomTeleporterBlockEntity) world.getBlockEntity(pos);
             if (blockEntity == null) return;
 
@@ -172,7 +172,7 @@ public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
                 if (!connectedBlocks.isEmpty()) {
                     BlockPos block_pos = null;
                     for (int i = 0; i < connectedBlocks.size(); i++) {
-                        BlockPos bpos = connectedBlocks.get(i).getPos();
+                        BlockPos bpos = connectedBlocks.get(i).getBlockPos();
                         if (!bpos.equals(pos)) {
                             block_pos = bpos;
                             break;
@@ -180,25 +180,31 @@ public class CustomTeleporterBlock extends Block implements BlockEntityProvider{
                     }
 
                     if (block_pos != null)
-                        teleportPlayer(player, block_pos, (ServerWorld) world);
-                    else player.sendMessage(Text.of("Trying to tp to same block."), true);
+                        teleportPlayer(player, block_pos, (ServerLevel) world);
+                    else sendActionBar(player, Component.literal("Trying to tp to same block."));
                 } else {
-                    player.sendMessage(Text.of("No connected teleport block found."), true);
+                    sendActionBar(player, Component.literal("No connected teleport block found."));
                 }
             }
-        } else if (world.isClient() && entity instanceof PlayerEntity) {
+        } else if (world.isClientSide() && entity instanceof Player) {
             spawnParticles(world, pos);
         }
 
     }
 
-    private void spawnParticles(World world, BlockPos pos) {
+    private void spawnParticles(Level world, BlockPos pos) {
         for (int i = 0; i < 10; i++) {
-            double x = pos.getX() + world.random.nextDouble();
+            double x = pos.getX() + world.getRandom().nextDouble();
             double y = pos.getY() + 1.0;
-            double z = pos.getZ() + world.random.nextDouble();
+            double z = pos.getZ() + world.getRandom().nextDouble();
 
-            world.addParticleClient(ParticleTypes.PORTAL, x, y, z, 0, 0, 0);
+            world.addParticle(ParticleTypes.PORTAL, x, y, z, 0, 0, 0);
+        }
+    }
+
+    private static void sendActionBar(Player player, Component message) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.sendSystemMessage(message, true);
         }
     }
 }

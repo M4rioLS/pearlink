@@ -7,15 +7,15 @@ import dev.m4riols.pearlink.network.TeleporterPayload;
 import dev.m4riols.pearlink.screen.CustomTeleporterScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.BlockPos;
 
 
 public class PearlinkClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        HandledScreens.register(ScreenHandlerTypeInit.CUSTOM_TELEPORTER, CustomTeleporterScreen::new);
+        MenuScreens.register(ScreenHandlerTypeInit.CUSTOM_TELEPORTER, CustomTeleporterScreen::new);
         registerClientReceivers();
     }
 
