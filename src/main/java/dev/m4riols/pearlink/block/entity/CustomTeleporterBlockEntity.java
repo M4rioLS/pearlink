@@ -1,5 +1,7 @@
 package dev.m4riols.pearlink.block.entity;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
 import dev.m4riols.pearlink.Pearlink;
@@ -11,6 +13,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -113,11 +116,23 @@ public class CustomTeleporterBlockEntity extends BlockEntity implements Extended
     public SimpleContainer getInventory(){return this.inventory;}
 
     public boolean isConnectedTo(CustomTeleporterBlockEntity other) {
-        return this.getInventory().getItem(0).getItem() == other.getInventory().getItem(0).getItem();
+        ItemStack key = this.getStoredItem();
+        return !key.isEmpty() && isSameKey(key, other.getStoredItem());
     }
 
     public ItemStack getStoredItem() {
         return this.getInventory().getItem(0);
+    }
+
+    /** Two teleporters link when their key items match in both item type and anvil-set name. */
+    public static boolean isSameKey(ItemStack a, ItemStack b) {
+        return ItemStack.isSameItem(a, b) && Objects.equals(keyName(a), keyName(b));
+    }
+
+    @Nullable
+    private static String keyName(ItemStack stack) {
+        Component name = stack.get(DataComponents.CUSTOM_NAME);
+        return name == null ? null : name.getString();
     }
 
 }

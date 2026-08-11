@@ -84,7 +84,7 @@ public class CustomTeleporterBlock extends Block implements EntityBlock {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CustomTeleporterBlockEntity teleportBlockEntity) {
                 ItemStack storedItem = teleportBlockEntity.getStoredItem();
-                if (ItemStack.isSameItem(storedItem, item)) {
+                if (CustomTeleporterBlockEntity.isSameKey(storedItem, item)) {
                     connectedBlocks.add(teleportBlockEntity);
                 }
             }
